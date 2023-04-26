@@ -84,7 +84,9 @@ class _MyAppState extends State<MyApp> {
                         onPressed: () {
                           setState(() {
                             if (val < 9) {
-                              val++;
+                              if (pageKey.currentState!.validate()) {
+                                val++;
+                              }
                             }
                           });
                         },
