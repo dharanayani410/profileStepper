@@ -19,22 +19,43 @@ class _ProfileState extends State<Profile> {
               flex: 2,
               child: Container(
                 alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                      Colors.blue.shade900,
+                      Colors.blue.shade700,
+                      Colors.blue.shade500,
+                      Colors.blue.shade700,
+                      Colors.blue.shade900,
+                    ])),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CircleAvatar(
                       radius: 40,
+                      foregroundImage: FileImage(Global.pic!),
                     ),
-                    Text(Global.name),
-                    Text(Global.email)
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      Global.name,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(Global.email, style: TextStyle(color: Colors.white))
                   ],
                 ),
               )),
           Expanded(
-              flex: 3,
+              flex: 5,
               child: Container(
                 padding: EdgeInsets.all(30),
-                color: Colors.grey,
+                color: Colors.blue.shade50,
                 child: SingleChildScrollView(
                   physics: BouncingScrollPhysics(),
                   child: Column(
@@ -48,7 +69,7 @@ class _ProfileState extends State<Profile> {
                       ListTile(
                         leading: Icon(Icons.call),
                         title: Text("Mobile"),
-                        subtitle: Text(Global.phone),
+                        subtitle: Text("+91 ${Global.phone}"),
                       ),
                       ListTile(
                         leading: Icon(Icons.email),
@@ -63,7 +84,7 @@ class _ProfileState extends State<Profile> {
                       ListTile(
                         leading: Icon(Icons.male),
                         title: Text("Gender"),
-                        subtitle: Text(Global.name),
+                        subtitle: Text(Global.gender),
                       ),
                       ListTile(
                         leading: Icon(Icons.location_on_outlined),

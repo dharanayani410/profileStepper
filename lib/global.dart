@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'dart:io';
 
 class Global {
   static String name = '';
@@ -9,6 +9,7 @@ class Global {
   static String nationalities = '';
   static String religion = '';
   static String language = '';
+  static String gender = '';
 
-  static File? image;
+  static File? pic;
 }

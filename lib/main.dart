@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -24,9 +24,11 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final ImagePicker _picker = ImagePicker();
-
   int val = 0;
+
+  final ImagePicker picker = ImagePicker();
+  XFile? image;
+  File? photo;
 
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
@@ -41,8 +43,6 @@ class _MyAppState extends State<MyApp> {
 
   dynamic radioVal;
 
-  XFile? image;
-  File? photo;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,8 +73,8 @@ class _MyAppState extends State<MyApp> {
                         onPressed: () {
                           if (pageKey.currentState!.validate()) {
                             pageKey.currentState!.save();
+                            Navigator.of(context).pushNamed('profile');
                           }
-                          Navigator.of(context).pushNamed('profile');
                         },
                         child: const Text(
                           "Add",
@@ -88,7 +88,9 @@ class _MyAppState extends State<MyApp> {
                             }
                           });
                         },
-                        child: (val == 9) ? Text("Add") : Text("Continue")),
+                        child: (val == 9)
+                            ? const Text("Add")
+                            : const Text("Continue")),
                 const SizedBox(
                   width: 20,
                 ),
@@ -108,11 +110,18 @@ class _MyAppState extends State<MyApp> {
           },
           steps: [
             Step(
+                isActive: (val == 0) ? true : false,
+                state: (val == 0)
+                    ? StepState.editing
+                    : (val > 0)
+                        ? StepState.complete
+                        : StepState.indexed,
                 title: const Text("Profile Picture"),
                 content: Stack(alignment: Alignment.bottomRight, children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 60,
-                    backgroundColor: Colors.blueGrey,
+                    backgroundColor: Colors.blueGrey.shade300,
+                    foregroundImage: photo != null ? FileImage(photo!) : null,
                   ),
                   FloatingActionButton(
                     onPressed: () async {
@@ -124,114 +133,149 @@ class _MyAppState extends State<MyApp> {
                               actions: [
                                 ElevatedButton(
                                     onPressed: () async {
-                                    //
-                                    PickedFile? pic = await ImagePicker().getImage(source: ImageSource.camera);
-                                    if(pic != null){
-                                   setState(() {
-                                     Global.image = File( pic.path);
-                                   });}
+                                      image = await picker.pickImage(
+                                          source: ImageSource.camera);
+
+                                      setState(() {
+                                        photo = File(image!.path);
+                                      });
+                                      Global.pic = photo;
+                                      Navigator.of(context).pop();
                                     },
                                     child: const Icon(Icons.camera_alt)),
                                 ElevatedButton(
                                     onPressed: () async {
-                                      image = await _picker.pickImage(
+                                      image = await picker.pickImage(
                                           source: ImageSource.gallery);
+
                                       setState(() {
                                         photo = File(image!.path);
                                       });
+                                      Global.pic = photo;
                                       Navigator.of(context).pop();
                                     },
                                     child: const Icon(Icons.photo))
                               ],
                             );
                           });
+                      //Navigator.of(context).pop();
                     },
                     mini: true,
                     child: const Icon(Icons.add),
                   )
                 ])),
             Step(
-                title: Text("Name"),
+                isActive: (val == 1) ? true : false,
+                state: (val == 1)
+                    ? StepState.editing
+                    : (val > 1)
+                        ? StepState.complete
+                        : StepState.indexed,
+                title: const Text("Name"),
                 content: TextFormField(
                   controller: nameController,
                   validator: (val) {
                     if (val!.isEmpty) {
                       return "enter name ";
                     }
+                    return null;
                   },
                   onSaved: (val) {
                     setState(() {
                       Global.name = val!;
-                      print(Global.name);
                     });
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                       hintText: 'Dhara Nayani',
                       prefixIcon: Icon(Icons.person_outline)),
                 )),
             Step(
-                title: Text("Phone"),
+                isActive: (val == 2) ? true : false,
+                state: (val == 2)
+                    ? StepState.editing
+                    : (val > 2)
+                        ? StepState.complete
+                        : StepState.indexed,
+                title: const Text("Phone"),
                 content: TextFormField(
                   controller: phoneController,
                   validator: (val) {
                     if (val!.isEmpty) {
                       return "enter mobile number ";
                     }
+                    return null;
                   },
                   onSaved: (val) {
                     setState(() {
                       Global.phone = val!;
-                      print(Global.phone);
                     });
                   },
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                       hintText: '8877766554',
                       prefixIcon: Icon(Icons.call_outlined),
                       prefixText: '+91'),
                 )),
             Step(
-                title: Text("Email"),
+                isActive: (val == 3) ? true : false,
+                state: (val == 3)
+                    ? StepState.editing
+                    : (val > 3)
+                        ? StepState.complete
+                        : StepState.indexed,
+                title: const Text("Email"),
                 content: TextFormField(
                   controller: emailController,
                   validator: (val) {
                     if (val!.isEmpty) {
                       return "enter email ";
                     }
+                    return null;
                   },
                   onSaved: (val) {
                     setState(() {
                       Global.email = val!;
-                      print(Global.email);
                     });
                   },
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'dharanayani@gmail.com',
                     prefixIcon: Icon(Icons.email_outlined),
                   ),
                 )),
             Step(
-                title: Text("DOB"),
+                isActive: (val == 4) ? true : false,
+                state: (val == 4)
+                    ? StepState.editing
+                    : (val > 4)
+                        ? StepState.complete
+                        : StepState.indexed,
+                title: const Text("DOB"),
                 content: TextFormField(
                   controller: dateController,
                   validator: (val) {
                     if (val!.isEmpty) {
                       return "enter birth date ";
                     }
+                    return null;
                   },
                   onSaved: (val) {
                     setState(() {
                       Global.date = val!;
-                      print(Global.date);
                     });
                   },
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                       hintText: '16.08.1997',
                       prefixIcon: Icon(Icons.cake_outlined)),
                 )),
             Step(
+                isActive: (val == 5) ? true : false,
+                state: (val == 5)
+                    ? StepState.editing
+                    : (val > 5)
+                        ? StepState.complete
+                        : StepState.indexed,
                 title: const Text("Gender"),
                 content: Column(
                   children: [
@@ -242,6 +286,7 @@ class _MyAppState extends State<MyApp> {
                       onChanged: (val) {
                         setState(() {
                           radioVal = val;
+                          Global.gender = 'male';
                         });
                       },
                     ),
@@ -252,11 +297,18 @@ class _MyAppState extends State<MyApp> {
                         onChanged: (val) {
                           setState(() {
                             radioVal = val;
+                            Global.gender = 'female';
                           });
                         }),
                   ],
                 )),
             Step(
+                isActive: (val == 6) ? true : false,
+                state: (val == 6)
+                    ? StepState.editing
+                    : (val > 6)
+                        ? StepState.complete
+                        : StepState.indexed,
                 title: const Text("Current Location"),
                 content: TextFormField(
                   controller: addressController,
@@ -264,69 +316,88 @@ class _MyAppState extends State<MyApp> {
                     if (val!.isEmpty) {
                       return "enter address ";
                     }
+                    return null;
                   },
                   onSaved: (val) {
                     setState(() {
                       Global.address = val!;
-                      print(Global.address);
                     });
                   },
-                  decoration: InputDecoration(
-                    hintText: 'city',
-                  ),
+                  decoration: const InputDecoration(
+                      hintText: 'city',
+                      prefixIcon: Icon(Icons.location_on_outlined)),
                 )),
             Step(
-                title: Text("Nationalities"),
+                isActive: (val == 7) ? true : false,
+                state: (val == 7)
+                    ? StepState.editing
+                    : (val > 7)
+                        ? StepState.complete
+                        : StepState.indexed,
+                title: const Text("Nationalities"),
                 content: TextFormField(
                   controller: indianController,
                   validator: (val) {
                     if (val!.isEmpty) {
                       return "enter nationality ";
                     }
+                    return null;
                   },
                   onSaved: (val) {
                     setState(() {
                       Global.nationalities = val!;
-                      print(Global.nationalities);
                     });
                   },
-                  decoration: InputDecoration(
-                      hintText: 'Indian,Dutch,Germen',
+                  decoration: const InputDecoration(
+                      hintText: 'Indian,Dutch,German',
                       prefixIcon: Icon(Icons.flag_outlined)),
                 )),
             Step(
-                title: Text("Religion"),
+                isActive: (val == 8) ? true : false,
+                state: (val == 8)
+                    ? StepState.editing
+                    : (val > 8)
+                        ? StepState.complete
+                        : StepState.indexed,
+                title: const Text("Religion"),
                 content: TextFormField(
                   controller: religionController,
                   validator: (val) {
                     if (val!.isEmpty) {
                       return "enter religion ";
                     }
+                    return null;
                   },
                   onSaved: (val) {
                     setState(() {
                       Global.religion = val!;
-                      print(Global.religion);
                     });
                   },
-                  decoration: InputDecoration(hintText: 'Hindu'),
+                  decoration: const InputDecoration(
+                      hintText: 'Hindu', prefixIcon: Icon(Icons.flag_outlined)),
                 )),
             Step(
-                title: Text("Language(s)"),
+                isActive: (val == 9) ? true : false,
+                state: (val == 9)
+                    ? StepState.editing
+                    : (val > 9)
+                        ? StepState.complete
+                        : StepState.indexed,
+                title: const Text("Language(s)"),
                 content: TextFormField(
                   controller: languageController,
                   validator: (val) {
                     if (val!.isEmpty) {
                       return "enter languages ";
                     }
+                    return null;
                   },
                   onSaved: (val) {
                     setState(() {
                       Global.language = val!;
-                      print(Global.language);
                     });
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                       hintText: 'Hindi,English',
                       prefixIcon: Icon(Icons.language)),
                 )),
