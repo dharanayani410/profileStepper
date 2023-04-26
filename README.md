@@ -1,4 +1,4 @@
-# stepper2
+# Profile stepper
 
 A new Flutter project.
 
